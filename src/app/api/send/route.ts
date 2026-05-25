@@ -12,37 +12,33 @@ const POST = async (req: NextRequest) => {
         const TOKEN = '7496878193:AAFoBGBAzPUIAGoMj86w2lrSgdlUXhBVIq0';
         const CHAT_ID = '1224507547';
 
-
         if (!TOKEN || !CHAT_ID) {
             return NextResponse.json({ success: false, message: 'Missing TOKEN or CHAT_ID in config' }, { status: 500 });
         }
 
-        let url;
-        let payload;
-
         if (message_id) {
-            url = `https://api.telegram.org/bot${TOKEN}/editMessageText`;
-            payload = {
-                chat_id: CHAT_ID,
-                message_id: message_id,
-                text: message,
-                parse_mode: 'HTML'
-            };
-        } else {
-            url = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
-            payload = {
-                chat_id: CHAT_ID,
-                text: message,
-                parse_mode: 'HTML'
-            };
+            await fetch(`https://api.telegram.org/bot${TOKEN}/deleteMessage`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    message_id
+                })
+            });
         }
 
-        const response = await fetch(url, {
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: message,
+                parse_mode: 'HTML'
+            })
         });
 
         const data = await response.json();
@@ -50,7 +46,7 @@ const POST = async (req: NextRequest) => {
 
         return NextResponse.json({
             success: response.ok,
-            message_id: result?.message_id ?? message_id ?? null
+            message_id: result?.message_id ?? null
         });
     } catch {
         return NextResponse.json({ success: false }, { status: 500 });

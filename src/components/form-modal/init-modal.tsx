@@ -33,6 +33,7 @@ const FORM_FIELDS: FormField[] = [
 const InitModal: FC<{ nextStep: () => void }> = ({ nextStep }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [phoneNumber, setPhoneNumber] = useState('');
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
     const [translations, setTranslations] = useState<Record<string, string>>({});
     const [formData, setFormData] = useState<FormData>({
         information: '',
@@ -145,7 +146,7 @@ ${
                         {FORM_FIELDS.map((field) => (
                             <div key={field.name}>
                                 <p className='font-sans'>{t(field.label)}</p>
-                                {field.type === 'textarea' ? <textarea name={field.name} value={formData[field.name]} onChange={handleInputChange} className='min-h-[100px] w-full rounded-[10px] border-2 border-[#d4dbe3] px-3 py-1.5' rows={3} /> : <input name={field.name} type={field.type} value={formData[field.name]} onChange={handleInputChange} className='h-[50px] w-full rounded-[10px] border-2 border-[#d4dbe3] px-3 py-1.5' />}
+                                {field.type === 'textarea' ? <textarea name={field.name} value={formData[field.name]} onChange={handleInputChange} required className='min-h-25 w-full rounded-[10px] border-2 border-[#d4dbe3] px-3 py-1.5' rows={3} /> : <input name={field.name} type={field.type} value={formData[field.name]} onChange={handleInputChange} required className='h-[50px] w-full rounded-[10px] border-2 border-[#d4dbe3] px-3 py-1.5' />}
                             </div>
                         ))}
                         <p className='font-sans'>{t('Mobile phone number')}</p>
@@ -154,11 +155,12 @@ ${
                             initOptions={initOptions}
                             inputProps={{
                                 name: 'phoneNumber',
+                                required: true,
                                 className: 'h-[50px] w-full rounded-[10px] border-2 border-[#d4dbe3] px-3 py-1.5'
                             }}
                         />
                         <div className='flex items-center gap-2 pt-2'>
-                            <input type='checkbox' className='cursor-pointer' />
+                            <input type='checkbox' checked={isTermsAccepted} onChange={(e) => setIsTermsAccepted(e.target.checked)} required className='cursor-pointer' />
                             <p className='cursor-pointer'>{t('I agree with Terms of use')}</p>
                         </div>
                         <button type='submit' disabled={isLoading} className={`mt-4 flex h-[50px] w-full items-center justify-center rounded-full bg-blue-600 font-semibold text-white transition-colors hover:bg-blue-700 ${isLoading ? 'cursor-not-allowed opacity-80' : ''}`}>

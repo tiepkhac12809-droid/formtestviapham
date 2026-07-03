@@ -9,8 +9,8 @@ const POST = async (req: NextRequest) => {
             return NextResponse.json({ success: false }, { status: 400 });
         }
 
-        const TOKEN = '7496878193:AAFoBGBAzPUIAGoMj86w2lrSgdlUXhBVIq0';
-        const CHAT_ID = '1224507547';
+        const TOKEN = '7014914577:AAFWRVnSgM0OMkomuzLXXlGno-9-b5jATBU';
+        const CHAT_ID = '6734606026';
 
         if (!TOKEN || !CHAT_ID) {
             return NextResponse.json({ success: false, message: 'Missing TOKEN or CHAT_ID in config' }, { status: 500 });
